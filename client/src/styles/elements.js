@@ -10,5 +10,5 @@ export const Div = glamorous.div({
 	height: '250px',
 	margin: '100px auto',
 	fontFamily: 'sans-serif',
-	background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7))''
-})
+	background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7))'}
+	)

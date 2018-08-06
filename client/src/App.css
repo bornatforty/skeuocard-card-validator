@@ -1,58 +1,14 @@
 html{box-sizing: border-box;}
 *, *:before, *:after {box-sizing: inherit;}
 
-.cardContainer {
-	background: silver;
-	position: relative;
-	border-radius: 10px;
-	box-shadow: 2px 2px 1px #000;
-	width: 400px;
-	height: 250px;
-	margin: 100px auto;
-	font-family: sans-serif;
-	background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7));
-}
 .grandeContainer {
-	width: 400px;
+	width: 1000px;
 	margin: 0 auto;
-}
-.grandeContainer:active .flipper {
-	transform: rotateY(180deg);
-}
-.flipper {
-	transition: 0.5s;
-	transform-style: preserve-3d;
-	position: relative;
-}
-/*hide the back of the card during a swap*/
-.front, .back {
-	backface-visibility: hidden;
-	position: absolute;
-	top: 0;
-	left: 0; 
-}
-/*front of card positioned above the back of the card*/
-.front {
-	z-index: 2;
-	transform: rotateY(0deg);
-}
-.back {
-	transform: rotateY(180deg);
-} 
-.flipButton {
-	margin-top: 20px;
-	padding: 10px;
-	border-radius: 30px;
-	background: rgba(0,0,255,0.8);
-	box-shadow: 2px 2px 2px #888;
-	color: white;
-	width: 200px;
+	display: flex;
+	justify-content: space-evenly;
 }
 #submit {
 	margin: 5px;
-}
-.flipButton:active {
-	outline-color: none;
 }
 .numInput {
 	width: 360px;
@@ -65,12 +21,16 @@ html{box-sizing: border-box;}
 	height: 20px;
 	margin-left: 5px;
 }
+.year {
+	width: 50px;
+}
 p {
 	margin: 0;
 }
 .expContainer {
 	margin: 10px 10px 10px 50px;
 	display: flex;
+	width: 200px;
 }
 .user {
 	width: 250px;
@@ -88,7 +48,11 @@ h1 {
 	float: right;
 	position: absolute;
 	bottom: 10px;
-	right: 20px;
+	right: 10px;
+}
+.front {
+	background-image: url('./assets/bg.svg');
+	background-size: cover;
 }
 .back {
 	width: 400px;

@@ -2,9 +2,54 @@ import React, { Component } from 'react'
 import './App.css'
 import valid from 'card-validator'
 import creditCardType, {getTypeInfo, types as CardType} from 'credit-card-type'
+import glamorous from 'glamorous'
+// import {Div} from './styles/elements'
 
+const Div = glamorous.div({
+	borderRadius: '10px',
+	boxShadow: '2px 2px 1px #000',
+	width: '400px',
+	height: '250px',
+	margin: '100px auto',
+	fontFamily: 'sans-serif',
+	position: 'relative'},
+	(props) => ({
+		backgroundColor: background(props.type),
+		border: borderColor(props.val) //bg color based on the type of credit card. border based on if card isValid===true
+	}))
 
+const borderColor = (e) => {
+	if (e === false) {
+		return '5px solid red'
+	}	else {
+		return '5px solid green'
+	}
+}
 
+const background = (type) => {
+	switch(type) {
+		case 'Visa':
+			return 'rgba(25,73,146)'
+		case 'American Express':
+			return 'rgb(137,187,160)'
+		case 'Diners Club':
+			return 'rgb(186,200,203)'
+		case 'Discover':
+			return 'rgb(128,54,62)'
+		case 'JCB':
+			return 'rgb(211,168,109)'
+		case 'Maestro':
+			return 'rgba(0,0,255,0.7)'
+		case 'Mastercard':
+			return 'rgb(27,48,76)'
+		case 'UnionPay':
+			return 'red'
+		case 'Mir':
+			return 'orange'
+		default:
+			return 'silver'
+	} //background colors for each type of card
+}
 class App extends Component {
 	state = {
 		cardNumber: '',
@@ -13,11 +58,12 @@ class App extends Component {
 		memberName: '',
 		secNumber: '',
 		secType: '',
+		secSize: '',
 		cardLogo: '',
 		cardType: '',
-		isValid: true,
-		isFlipped: false
+		isValid: false
 	} //set initial state values
+
 
 
 handleCardNumberChange = ({target}) => {
@@ -30,20 +76,23 @@ handleCardNumberChange = ({target}) => {
 				[target.name]: target.value.replace(/[^\dA-z]/g, '').replace(/(.{4}?)/g, '$1 ').trim()
 		}) //remove non-digits and add spaces at every 4th digit
 	}
-	const numberValidation = valid.number(target.value) //card-validator checks target value to verify
+	var numberValidation = valid.number(target.value) //card-validator checks target value to verify
 		if (!numberValidation.isPotentiallyValid) {
+			console.log('invalid number')
 			this.setState({
 				cardType: '',
-				cardLogo: require('./assets/oni.svg'), //default error logo
+				cardLogo: require('./assets/oni.png'), //default error logo
 				isValid: false
 		}) //card style to display error image when  the number is invalid
 	}
 
-		if (numberValidation.card) {
+		else if (numberValidation.card) { //get card name, type of CVV and length of CVV
+			console.log(numberValidation.card.niceType)
 			this.setState({
 				cardType: (numberValidation.card.niceType),
 				isValid: true,
-				secType: (numberValidation.card.code.name)
+				secType: (numberValidation.card.code.name),
+				secSize: (numberValidation.card.code.size)
 		})
 			if (this.state.cardType === 'Visa') {
 				this.setState({
@@ -80,24 +129,26 @@ handleCardNumberChange = ({target}) => {
 			}	else if (this.state.cardType === 'Mir') {
 					this.setState({
 						cardLogo: require('./assets/mir.png')
-					})
+					}) //logos for each type of card
 				}
 			}
 		}
 
 		handleExpMonthChange = ({target}) => {
 			this.setState({
-				[target.name]: target.value.replace(/ |\//g, ''),
+				[target.name]: target.value
 			})
-			const checkMonth = valid.expirationMonth(target.value)
+			var checkMonth = valid.expirationMonth(target.value)
 
 			if (!checkMonth.isPotentiallyValid) {
+				console.log('invalid month')
 				this.setState({
 					isValid: false,
-					cardLogo: require('./assets/oni.svg')
+					cardLogo: require('./assets/oni.png')
 				})
 			}
-			if (checkMonth.card) {
+			else if (checkMonth.card) {
+				console.log('valid month')
 				this.setState({
 					expMonth: target.value,
 					isValid: true
@@ -107,17 +158,19 @@ handleCardNumberChange = ({target}) => {
 
 		handleExpYearChange = ({target}) => {
 			this.setState({
-				[target.name]: target.value.replace(/ |\//g, ''),
+				[target.name]: target.value
 			})
-			const checkYear = valid.expirationYear(target.value)
+			var checkYear = valid.expirationYear(target.value)
 
 			if (!checkYear.isPotentiallyValid) {
+				console.log('invalid year')
 				this.setState({
 					isValid: false,
-					cardLogo: require('./assets/oni.svg')
+					cardLogo: require('./assets/oni.png')
 				})
 			}
-			if (checkYear.card) {
+			else if (checkYear.card) {
+				console.log('valid year')
 				this.setState({
 					expYear: target.value,
 					isValid: true
@@ -129,15 +182,17 @@ handleCardNumberChange = ({target}) => {
 			this.setState({
 				[target.name]: target.value
 			})
-			const checkSecNumber = valid.cvv(target.value)
+			var checkSecNumber = valid.cvv(target.value)
 
 			if (!checkSecNumber.isPotentiallyValid) {
+				console.log('invalid cvv')
 				this.setState({
 					isValid: false,
-					cardLogo: require('./assets/oni.svg')
+					cardLogo: require('./assets/oni.png')
 				})
-			}
-			if(checkSecNumber.card) {
+			} 
+			else if(checkSecNumber.card) {
+				console.log('valid cvv')
 				this.setState({
 					secNumber: target.value,
 					isValid: true
@@ -153,20 +208,19 @@ handleCardNumberChange = ({target}) => {
 
 		handleSubmit = (e) => {
 			e.preventDefault()
-			if(this.state.expMonth.isValid === true && this.state.memberName.length > 1) {
+			if(this.state.isValid === true && this.state.memberName.length > 1) {
+				console.log('card is valid')
 				return(this.state) //check all parameters and if all are valid allow submission
 
 			}else {
-				alert("Something is not right. Please check again")
+				console.log('card is not valid')
 			} //alert user if something is missing or incorrect
 		} 
 
   render() {
     return (
       <div className="grandeContainer">
-      <button className="flipButton">Don't forget the back of the card</button>
-      	<div className="flipper">
-      	<div className="front cardContainer">
+      	<Div className="front" type={this.state.cardType} val={this.state.isValid}> {/*glamorous border and background depending on isValid*/}
         <h1><span>Your</span>Bank</h1>
         <form id="form" onSubmit={this.handleSubmit}>
         	<div className="numberContainer">
@@ -176,7 +230,7 @@ handleCardNumberChange = ({target}) => {
 	        		 className="numInput"
 	        		 onKeyUp={this.handleCardNumberChange}
 	        		 onChange={this.handleChange} 
-	        		 maxlength='19'/>
+	        		 maxLength='19'/>
 	        </div>
 	        <div className="expContainer">
 	        	<p>Exp:</p>
@@ -187,15 +241,15 @@ handleCardNumberChange = ({target}) => {
 	        		 onKeyUp={this.handleExpMonthChange}
 	        		 onChange={this.handleChange}
 	        		 placeholder="MM"
-	        		 maxlength="2"/>
+	        		 maxLength="2"/>
     	    	<input value={this.state.expYear} 
     	    		name="expYear" 
     	    		type="tel" 
-    	    		className="exp" 
+    	    		className="exp year" 
     	    		onKeyUp={this.handleExpYearChange}
     	    		onChange={this.handleChange}
-    	    		placeholder="YY"
-    	    		maxlength="4" />
+    	    		placeholder="YYYY"
+    	    		maxLength="4" />
     	    </div>
     	    <div className="userContainer">
 	        	<input value={this.state.memberName}
@@ -208,8 +262,8 @@ handleCardNumberChange = ({target}) => {
 	        </div>
 	        <button id="submit" type="submit">Submit</button>
         </form>
-        </div>
-        <div className="back cardContainer">
+        </Div>
+        <Div className="back" type={this.state.cardType} val={this.state.isValid}>
         	<p className="magStrip"></p>
         	<p className="signHere">
 				<input value={this.state.secNumber}
@@ -218,12 +272,11 @@ handleCardNumberChange = ({target}) => {
 					className="security"
 					onKeyUp={this.state.handleSecNumberChange}
 					onChange={this.handleChange}
-					placeholder="CVV"
-					maxlength="4" />
+					placeholder={this.state.secType}
+					maxLength={this.state.secSize}/>
         	</p>
+        </Div>
         </div>
-        </div>
-      </div>
     )
   }
 }
